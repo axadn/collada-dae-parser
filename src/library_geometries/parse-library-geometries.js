@@ -13,7 +13,7 @@ function ParseLibraryGeometries (library_geometries) {
   var source = geometryMesh.source
 
   /* Vertex Positions, UVs, Normals */
-  var polylistIndices = geometryMesh.polylist[0].p[0].split(' ')
+  var polylistIndices = (geometryMesh.polylist || geometryMesh.triangles)[0].p[0].split(' ')
 
   var vertexNormalIndices = []
   var vertexPositionIndices = []
