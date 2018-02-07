@@ -19,14 +19,14 @@ function parseLibraryAnimations (libraryAnimations, jointInverseBindPoses, visua
   var allKeyframes = {}
   var keyframeJointMatrices = {}
   var jointParents = visualSceneData.jointParents
+  const idToSidMap = visualSceneData.idToSidMap;
   var armatureScale = visualSceneData.armatureScale
 
   // First pass.. get all the joint matrices
   animations.forEach(function (anim, animationIndex) {
     if (anim.$.id.indexOf('pose_matrix') !== -1) {
       // TODO: Is this the best way to get an animations joint target?
-      var animatedJointName = anim.channel[0].$.target.split('/')[0]
-
+      var animatedJointName = idToSidMap[anim.channel[0].$.target.split('/')[0]]
       var currentKeyframes = anim.source[0].float_array[0]._.split(' ').map(Number)
 
       var currentJointPoseMatrices = anim.source[1].float_array[0]._.split(' ').map(Number)
@@ -48,7 +48,7 @@ function parseLibraryAnimations (libraryAnimations, jointInverseBindPoses, visua
   // Second pass.. Calculate world matrices
   animations.forEach(function (anim, animationIndex) {
     if (anim.$.id.indexOf('pose_matrix') !== -1) {
-      var animatedJointName = anim.channel[0].$.target.split('/')[0]
+      var animatedJointName = idToSidMap[anim.channel[0].$.target.split('/')[0]]
       var currentKeyframes = anim.source[0].float_array[0]._.split(' ').map(Number)
       currentKeyframes.forEach(function (_, keyframeIndex) {
         var currentKeyframe = currentKeyframes[keyframeIndex]
