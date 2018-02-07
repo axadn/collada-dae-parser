@@ -23,17 +23,20 @@ function ParseVisualScenes (library_visual_scenes) {
     }
     */
   })
-
   return {
-    jointParents: parsedJoints,
-    armatureScale: armatureScale
+    jointParents: parsedJoints.joints,
+    armatureScale: armatureScale,
+    idToSidMap: parsedJoints.idToSidMap
   }
 }
 
 // Recursively parse child joints
-function parseJoints (node, parentJointName, accumulator) {
+function parseJoints (node, parentJointName, accumulator, idToSidMap) {
+  idToSidMap = idToSidMap || {};
   accumulator = accumulator || {}
   node.forEach(function (joint) {
+
+    idToSidMap[joint.$.id] = joint.$.sid
     accumulator[joint.$.sid] = accumulator[joint.$.sid] || {}
     // The bind pose of the matrix. We don't make use of this right now, but you would
     // use it to render a model in bind pose. Right now we only render the model based on
@@ -41,9 +44,9 @@ function parseJoints (node, parentJointName, accumulator) {
     accumulator[joint.$.sid].jointMatrix = joint.matrix[0]._.split(' ').map(Number)
     accumulator[joint.$.sid].parent = parentJointName
     if (joint.node) {
-      parseJoints(joint.node, joint.$.sid, accumulator)
+      parseJoints(joint.node, joint.$.sid, accumulator, idToSidMap)
     }
   })
 
-  return accumulator
+  return {joints: accumulator, idToSidMap}
 }
